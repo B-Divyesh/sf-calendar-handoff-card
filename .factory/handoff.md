@@ -1,4 +1,28 @@
-# Calendar Handoff Card — build handoff
+# Calendar Handoff Card — review handoff
+
+## Review 1 status — FAIL
+
+On 2026-08-28, an independent adversarial first-read review was completed against the live production URL at 390px and desktop, plus the checked-out source. No product code was changed.
+
+The complete evidence and findings are in [review-1.md](review-1.md). The review is **FAIL** because the product has no one-click isolated sample demo, no `.factory/claims.json` or `@claim:` tests, and no designed 404/sitemap behavior. It also records first-screen audience/copy, metadata, navigation-focus, and README copy findings.
+
+Commands run in this review:
+
+```sh
+npm ci
+npm test
+npm run build
+```
+
+Results: 12 Vitest tests passed; 14 Playwright tests passed with 2 intentional skips; the production build completed and produced `dist/`. These results do not validate the absent claims/demo contract.
+
+## Required next step
+
+Resolve every finding in `review-1.md`, especially F-1-1 through F-1-3 and F-1-30, then run a fresh full review against the deployed result. Do not mark the prior build verification as current acceptance.
+
+---
+
+# Previous build handoff (superseded by Review 1)
 
 ## Independent verification status — PASS
 
