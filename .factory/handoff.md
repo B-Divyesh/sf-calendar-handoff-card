@@ -1,5 +1,14 @@
 # Calendar Handoff Card — build handoff
 
+## Independent verification status — PASS
+
+**Candidate verified:** `dfa4929b4677590fc0138e274ebffdf3c055245f` on 2026-08-28
+**Verified URL:** <https://calendar-handoff-card.sociobot.in>
+
+Independent QA passed. A clean detached checkout installed with `npm ci`, passed the 12-test unit suite and exact production build, and completed all Playwright cases (**14 passed, 2 intended project skips**) in desktop Chromium and a 390 × 844 viewport. The live `index.html` and main hashed JavaScript have byte-identical SHA-256 values to the candidate build. Live Axe reported no serious/critical issues; keyboard, mobile/no-overflow, reduced motion, offline service-worker reload, invalid-input recovery, privacy/no-storage, no-third-party-request, headers, caching, and export paths were checked.
+
+No product defects were found. Full commands, hashes, boundary values, response policy evidence, and the isolated transient test-host Chromium crash are in [verification-1.md](verification-1.md).
+
 ## Shipped
 
 - A complete local-first Vite + TypeScript event handoff maker.
