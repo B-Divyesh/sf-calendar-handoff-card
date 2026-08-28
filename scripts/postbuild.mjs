@@ -6,6 +6,9 @@ const assetNames = await readdir(new URL("assets/", dist));
 const precache = [
   "/",
   "/index.html",
+  "/favicon.svg",
+  "/robots.txt",
+  "/assets/calendar-bridge-520.webp",
   "/assets/calendar-bridge-720.webp",
   "/assets/calendar-bridge-1200.webp",
   ...assetNames.filter((name) => /\.(?:js|css)$/.test(name)).map((name) => `/assets/${name}`)

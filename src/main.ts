@@ -391,6 +391,7 @@ function initializeApp(): void {
       fileInput.value = "";
     }
   });
+  requiredElement<HTMLButtonElement>("#choose-ics-file").addEventListener("click", () => fileInput.click());
 
   requiredElement<HTMLButtonElement>("#paste-ics-button").addEventListener("click", () => {
     dialogError.textContent = "";
