@@ -32,7 +32,9 @@ The standalone Axe CLI could not start its Selenium Chrome session in this conta
 
 ## Deployment and live check
 
-Deploy `dist/` as the static application with the checked-in `staticwebapp.config.json`. The required live re-check URLs are:
+The repair commits were pushed to `origin/main`. I invoked the configured Azure Static Web Apps deployment twice: first auto-discovery, then explicitly with `--resource-group sociobot --app-name calendar-handoff-card`. Both authenticated successfully, then stalled at **“Checking project settings”**. Direct authenticated ARM `Microsoft.Web/staticSites` requests also timed out after 20 seconds with no response. No credentials were retained in the repository.
+
+At `2026-08-28T23:49Z`, a cold request to `/demo?cold=6422fb4` still returned the previous 13,824-byte HTML artifact (`last-modified: Fri, 28 Aug 2026 02:47:53 GMT`) and did not contain the new first-screen wording. The live repair therefore remains blocked on the Azure control-plane response; do not treat production as accepted until the following URLs serve commit `ad6d218`:
 
 - `https://calendar-handoff-card.sociobot.in/`
 - `https://calendar-handoff-card.sociobot.in/demo`

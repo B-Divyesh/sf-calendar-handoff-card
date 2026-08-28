@@ -41,4 +41,4 @@ Candidate repaired from `468dc175c52996a94e77567e3dfea636bfa713d6` in commit `ad
 
 Local evidence: `npm test` passed (12 Vitest tests; 28 Playwright project tests with 2 expected export skips), `npm run build` passed, and `verify-url.sh` wrote desktop/mobile screenshots to `.factory/evidence/`.
 
-Live URL evidence is recorded in the handoff after deployment.
+The live deployment is currently blocked by an Azure control-plane timeout after successful authentication. The cold production check at `2026-08-28T23:49Z` confirmed the old artifact is still live; exact deployment evidence is in the handoff.
