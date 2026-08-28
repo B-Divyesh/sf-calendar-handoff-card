@@ -1,0 +1,13 @@
+{
+  "slug": "calendar-handoff-card",
+  "title": "Calendar Handoff Card",
+  "territory": "utilities",
+  "user": "Families and small teams coordinating across calendar ecosystems who need a dependable, copyable event handoff when an invite is missed, blocked, or inconvenient to open.",
+  "recurrence": "Calendar interoperability fails at the handoff point: recipients need one simple representation rather than another calendar migration.",
+  "current_workaround": "Forward an ICS file, screenshot the event, manually type the time or meeting link into chat, or ask everyone to join the same calendar service.",
+  "smallest_useful_product": "A local web tool that accepts pasted event fields or an ICS file and creates accessible plain text, a compact image/PDF card, timezone equivalents, joining details, and a minimal add-to-calendar link.",
+  "success_measure": "80% of recipients can identify the correct local time and joining link from the shared card without opening an ICS file; senders create a card in under 60 seconds.",
+  "artifact_class": "static-web",
+  "monetization": "free",
+  "constraints": "Perform ICS parsing in-browser; make event links and descriptions opt-in in QR/image output; handle DST/timezone conversion deterministically; no tracking pixels."
+}
