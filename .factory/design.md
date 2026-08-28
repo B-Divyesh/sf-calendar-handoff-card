@@ -67,5 +67,6 @@ Final prompt:
 - Generator: Azure OpenAI factory image deployment via `/opt/fleet/lib/gen-image.sh`.
 - Generation date: 2026-08-28.
 - License/provenance: original generated asset commissioned for this product; prompt recorded above. Generated imagery is disclosed in the footer.
+- Review: accepted after full-resolution inspection. No accidental text, watermark, branding, people, malformed glyphs, or unwanted seams; palette and negative-space composition match the thesis.
 
 Authored interface icons are simple inline SVG strokes and CSS paper shapes created in-repository; no third-party icon or asset pack is used.
