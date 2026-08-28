@@ -1,0 +1,26 @@
+{
+  "name": "calendar-handoff-card",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/postbuild.mjs",
+    "preview": "vite preview",
+    "test": "vitest run && playwright test",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "qrcode": "1.5.4"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "@types/node": "22.15.3",
+    "@types/qrcode": "1.5.5",
+    "typescript": "5.8.3",
+    "vite": "6.3.4",
+    "vitest": "3.1.2"
+  }
+}
