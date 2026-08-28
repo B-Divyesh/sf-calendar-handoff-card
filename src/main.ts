@@ -10,44 +10,85 @@ function requiredElement<T extends Element>(selector: string): T {
   return element;
 }
 
+const PRODUCT_URL = "https://calendar-handoff-card.sociobot.in";
+const DEMO_EVENT: EventDraft = {
+  title: "Grandma’s birthday lunch",
+  startDate: "2026-11-01",
+  startTime: "12:30",
+  endDate: "2026-11-01",
+  endTime: "14:30",
+  timeZone: "America/New_York",
+  allDay: false,
+  location: "42 Orchard Lane, Brooklyn",
+  joinUrl: "https://meet.example/family-lunch",
+  organizer: "Maya Chen",
+  rsvp: "Reply to Maya by Thursday",
+  description: "Bring a photo for Grandma’s album. Call in if travel is difficult."
+};
+
+function setRouteMeta(title: string, description: string, path: string): void {
+  document.title = title;
+  document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+  document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${PRODUCT_URL}${path}`);
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+  document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+  document.querySelector('meta[property="og:url"]')?.setAttribute("content", `${PRODUCT_URL}${path}`);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
+}
+
+function sharedHeader(): string {
+  return `<header class="site-header">
+    <a class="wordmark" href="/" aria-label="Calendar Handoff Card home"><span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Calendar Handoff Card</span></a>
+    <nav class="site-nav" aria-label="Primary"><a href="/">Home</a><a href="/demo">Demo</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
+  </header>`;
+}
+
+function sharedFooter(): string {
+  return `<footer><p><strong>Calendar Handoff Card</strong> makes event cards from details or calendar files.</p><nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a></nav><p class="asset-note">Original paper-collage artwork was generated for this product. Built by Param Factory · build 468dc17.</p></footer>`;
+}
+
+function focusRouteHeading(): void {
+  const heading = document.querySelector<HTMLElement>("h1");
+  if (!heading) return;
+  heading.tabIndex = -1;
+  window.setTimeout(() => heading.focus({ preventScroll: true }), 0);
+  const announcer = document.querySelector<HTMLElement>("#route-announcer");
+  if (announcer) announcer.textContent = heading.textContent || "Page loaded";
+}
+
 function renderLegalPage(kind: "privacy" | "terms"): boolean {
   const path = window.location.pathname.replace(/\/$/, "");
   if (path !== `/${kind}`) return false;
 
   const isPrivacy = kind === "privacy";
-  document.title = isPrivacy
-    ? "Privacy — Calendar Handoff Card"
-    : "Terms — Calendar Handoff Card";
+  setRouteMeta(
+    isPrivacy ? "Privacy — Calendar Handoff Card" : "Terms — Calendar Handoff Card",
+    isPrivacy ? "How Calendar Handoff Card handles event details and browser storage." : "Terms for using Calendar Handoff Card.",
+    `/${kind}`
+  );
   const app = requiredElement<HTMLDivElement>("#app");
   app.innerHTML = `
-    <header class="site-header">
-      <a class="wordmark" href="/" aria-label="Calendar Handoff Card home">
-        <span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span>Calendar Handoff Card</span>
-      </a>
-      <p class="privacy-stamp"><span aria-hidden="true">●</span> Stays on this device</p>
-    </header>
+    ${sharedHeader()}
     <main id="main">
       <article class="legal-page">
         <p class="eyebrow">${isPrivacy ? "Plain-language privacy" : "Use terms"}</p>
-        <h1>${isPrivacy ? "Your events stay yours." : "A small tool, fair terms."}</h1>
+        <h1>${isPrivacy ? "Privacy for your event details" : "Terms for using this tool"}</h1>
         <p class="legal-date">Effective 28 August 2026</p>
         ${isPrivacy ? `
-          <p>Calendar Handoff Card processes event details entirely in your browser. The service does not receive, store, sell, or analyze the event names, times, locations, links, notes, ICS files, cards, or calendar files you use here.</p>
-          <h2>What is collected</h2>
-          <p>No analytics, advertising identifiers, tracking pixels, cookies, accounts, or contact lists are used. The web host may produce short-lived security and request logs such as IP address, timestamp, and requested path as part of operating the site.</p>
-          <h2>On your device</h2>
-          <p>The page uses a service worker and browser cache so it can work offline. That cache contains only the application shell and artwork—not your event form entries. Closing or refreshing the page clears entered details because the tool does not write them to local storage.</p>
+          <p>Event details are processed in your browser. This site does not send them to a server.</p>
+          <h2>Browser storage</h2>
+          <p>The offline cache stores the app files and artwork. It does not store event entries.</p>
           <h2>Files and links</h2>
-          <p>ICS files are read locally. PNG, PDF, and ICS exports are created locally. If you choose to open a joining link or share a downloaded file, the receiving app or website has its own privacy practices.</p>
+          <p>Calendar files are read in your browser. Downloads are created in your browser.</p>
           <h2>Questions</h2>
           <p>Review or report an issue through the project’s <a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">public source repository</a>.</p>
         ` : `
-          <p>Calendar Handoff Card is a free utility provided “as is” to help people restate calendar information in a portable format.</p>
+          <p>Calendar Handoff Card is a free tool for making an event card from details or a calendar file.</p>
           <h2>Your responsibility</h2>
-          <p>Check the event details and timezone before sharing. Only include joining links, notes, and other information you are allowed to share. The tool does not send invitations, manage RSVPs, host events, or guarantee attendance.</p>
+          <p>Check event details and local times before sharing. Only share links and notes you may share.</p>
           <h2>No warranty</h2>
-          <p>Calendar data can be incomplete or use vendor-specific formats. We aim for dependable conversion but do not warrant that every ICS file, timezone rule, calendar application, or generated document will behave identically.</p>
+          <p>Calendar files can vary. Check the downloaded file before relying on it.</p>
           <h2>Acceptable use</h2>
           <p>Do not use the service to distribute unlawful, deceptive, harmful, or privacy-invasive content, or to interfere with the service.</p>
           <h2>Open source</h2>
@@ -56,16 +97,14 @@ function renderLegalPage(kind: "privacy" | "terms"): boolean {
         <p><a href="/">← Return to the card maker</a></p>
       </article>
     </main>
-    <footer>
-      <p><strong>Calendar Handoff Card</strong> · No accounts, event storage, or tracking.</p>
-      <nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a></nav>
-    </footer>
+    ${sharedFooter()}
   `;
   const skip = document.querySelector<HTMLAnchorElement>(".skip-link");
   if (skip) {
     skip.href = "#main";
     skip.textContent = "Skip to content";
   }
+  focusRouteHeading();
   return true;
 }
 
@@ -79,6 +118,13 @@ if (route === "/privacy") {
 }
 
 function initializeApp(): void {
+  const isDemo = route === "/demo" || new URLSearchParams(window.location.search).get("demo") === "1" || sessionStorage.getItem("demo:calendar-handoff-card") === "active";
+  if (!isDemo) sessionStorage.removeItem("demo:calendar-handoff-card");
+  setRouteMeta(
+    isDemo ? "Demo — Calendar Handoff Card" : "Calendar Handoff Card — create an event card",
+    isDemo ? "Try a filled sample event card with local times and sharing options." : "Create a shareable event card for families and small teams when a calendar invite is hard to open.",
+    isDemo ? "/demo" : "/"
+  );
   const form = requiredElement<HTMLFormElement>("#event-form");
   const titleInput = requiredElement<HTMLInputElement>("#title");
   const startDateInput = requiredElement<HTMLInputElement>("#start-date");
@@ -295,6 +341,17 @@ function initializeApp(): void {
     render();
   }
 
+  function seedDemo(): void {
+    sessionStorage.setItem("demo:calendar-handoff-card", "active");
+    fillForm(DEMO_EVENT);
+    recipientSelect.value = zones.includes("Europe/London") ? "Europe/London" : "UTC";
+    includeLink.checked = false;
+    includeDescription.checked = false;
+    includeQr.checked = false;
+    render();
+    showToast("Sample event loaded.");
+  }
+
   function importText(text: string): void {
     const result = parseIcs(text, deviceZone);
     fillForm(result.event);
@@ -441,6 +498,14 @@ function initializeApp(): void {
   window.addEventListener("offline", updateConnection);
   updateConnection();
   render();
+
+  if (isDemo) {
+    requiredElement<HTMLElement>("#demo-banner").hidden = false;
+    requiredElement<HTMLButtonElement>("#reset-demo").addEventListener("click", seedDemo);
+    requiredElement<HTMLAnchorElement>("#start-real").addEventListener("click", () => sessionStorage.removeItem("demo:calendar-handoff-card"));
+    seedDemo();
+    focusRouteHeading();
+  }
 
   if ("serviceWorker" in navigator && import.meta.env.PROD) {
     window.addEventListener("load", () => {

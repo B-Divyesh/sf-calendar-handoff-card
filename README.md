@@ -1,40 +1,38 @@
 # Calendar Handoff Card
 
-Calendar Handoff Card turns event details or an ICS file into a dependable, channel-ready handoff: clear plain text, a compact PNG or PDF, timezone equivalents, joining details, and a universal calendar download.
+Create a shareable event card from details or a calendar file. Copy plain text or download an image, PDF, or calendar file.
 
-It is for families and small teams whose recipients use different calendar systems—or missed the original invitation. It does not sync calendars, host events, send invitations, or store contacts.
+It is for families and small teams when an invite is hard to open or crosses calendar apps.
 
 Live product: <https://calendar-handoff-card.sociobot.in>
 
-## What it does
+## Use it
 
-- Imports the first `VEVENT` from an ICS file or pasted ICS text.
-- Accepts typed event, organizer, RSVP, place, link, and note fields.
-- Resolves IANA timezones in-browser, applies date-specific daylight-saving rules, and rejects nonexistent DST wall times.
-- Shows the event time alongside the device and a chosen recipient timezone.
-- Copies an accessible plain-text handoff.
-- Downloads an illustrated PNG, compact PDF, or standards-based ICS file.
-- Keeps links, notes, and link QR codes out of PNG/PDF output unless explicitly enabled.
-- Works offline after the first successful visit.
+Open [the demo](https://calendar-handoff-card.sociobot.in/demo) to see a filled event card. Add event details, check local times, then choose a sharing format.
 
-No event data is sent to a server or written to local storage. There are no accounts, cookies, trackers, analytics, third-party fonts, or runtime CDNs.
+- Import the first event from a calendar file (`.ics`) or calendar text.
+- Add a title, time, place, organizer, RSVP details, link, and notes.
+- Compare event, device, and recipient times.
+- Keep private link and note choices off until you select them.
+
+The app has no account flow. Event details are processed in the browser. The app works offline after its first visit. Each statement is covered by the listed [claim tests](.factory/claims.json).
 
 ## Develop
 
-Requires Node.js 20 or newer.
+Node.js 20 or newer is required.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Vite prints the local URL. Production output is reproducible with:
+Build the static deploy output with:
 
 ```sh
 npm run build
 ```
 
-The exact deploy artifact is `dist/`, with `dist/index.html` at its root. `staticwebapp.config.json` supplies the Azure Static Web Apps navigation fallback, security headers, and immutable asset caching.
+The deploy artifact is `dist/`, with `dist/index.html` at its root. Azure Static Web Apps uses `staticwebapp.config.json` for fallback, headers, caches, and the designed 404 response.
 
 ## Test
 
@@ -42,23 +40,21 @@ The exact deploy artifact is `dist/`, with `dist/index.html` at its root. `stati
 npm test
 ```
 
-This runs Vitest unit coverage for timezone/ICS/output logic, then Playwright journeys in desktop Chromium and a 390 px mobile Chromium viewport. The browser suite includes Axe serious/critical checks, keyboard navigation, offline editing, imports, and file downloads. Playwright is pinned to `1.58.2` as required by the build environment.
+This runs unit tests and browser checks in desktop Chromium and a 390px mobile viewport. The browser suite checks accessibility, keyboard access, offline reload, routing, and all claims.
 
-Individual commands:
+Run an individual claim exactly as listed in `.factory/claims.json`, for example:
 
 ```sh
-npm run test:unit
-npm run test:e2e
+npm run test:e2e -- --grep @claim:offline-reload
 ```
 
 ## Privacy and legal
 
-The in-product [privacy page](/privacy) explains local processing and the service-worker cache. The [terms page](/terms) explains the tool’s limits. The project is MIT licensed.
+Read the in-product [privacy page](https://calendar-handoff-card.sociobot.in/privacy) and [terms page](https://calendar-handoff-card.sociobot.in/terms). See [LICENSE](LICENSE) for reuse terms.
 
-## Product and design records
+## Product records
 
 - [Research brief](.factory/brief.json)
-- [Visual thesis and asset provenance](.factory/design.md)
+- [Visual thesis and artwork provenance](.factory/design.md)
+- [Demo sandbox](.factory/demo.md)
 - [Build handoff](.factory/handoff.md)
-
-The original hero artwork source and generation metadata are in `assets/src/`; optimized runtime assets are in `public/assets/`.

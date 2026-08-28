@@ -5,6 +5,7 @@ const dist = new URL("../dist/", import.meta.url);
 const assetNames = await readdir(new URL("assets/", dist));
 const precache = [
   "/",
+  "/demo",
   "/index.html",
   "/favicon.svg",
   "/robots.txt",

@@ -1,4 +1,4 @@
-const CACHE = "handoff-card-v1";
+const CACHE = "handoff-card-v2";
 const PRECACHE = "__PRECACHE__";
 
 self.addEventListener("install", (event) => {

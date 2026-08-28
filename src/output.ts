@@ -228,7 +228,7 @@ export async function renderCard(event: EventDraft, options: ExportOptions): Pro
   }
   ctx.fillStyle = "#62564c";
   ctx.font = "600 20px Arial, sans-serif";
-  ctx.fillText("CALENDAR HANDOFF CARD  ·  A CLEAR COPY FOR THE JOURNEY", left, footerY + 52);
+  ctx.fillText("CALENDAR EVENT CARD  ·  SHARE DETAILS CLEARLY", left, footerY + 52);
   ctx.restore();
   return canvas;
 }

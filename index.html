@@ -4,28 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#f3e9d2" />
-    <meta name="description" content="Turn an event or ICS file into a clear, timezone-safe card for chat, email, or print. Private and local in your browser." />
+    <meta name="description" content="Create a shareable event card for families and small teams when a calendar invite is hard to open." />
+    <link rel="canonical" href="https://calendar-handoff-card.sociobot.in/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>Calendar Handoff Card — pass the event, not the calendar</title>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Calendar Handoff Card" />
+    <meta property="og:title" content="Calendar Handoff Card — create an event card" />
+    <meta property="og:description" content="Create a shareable event card when a calendar invite is hard to open." />
+    <meta property="og:url" content="https://calendar-handoff-card.sociobot.in/" />
+    <meta property="og:image" content="https://calendar-handoff-card.sociobot.in/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Calendar Handoff Card — create an event card" />
+    <meta name="twitter:description" content="Create a shareable event card when a calendar invite is hard to open." />
+    <meta name="twitter:image" content="https://calendar-handoff-card.sociobot.in/og-image.png" />
+    <title>Calendar Handoff Card — create an event card</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to event builder</a>
+    <div id="route-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <div id="app">
       <header class="site-header">
         <a class="wordmark" href="/" aria-label="Calendar Handoff Card home">
           <span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span>
           <span>Calendar Handoff Card</span>
         </a>
-        <p class="privacy-stamp"><span aria-hidden="true">●</span> Stays on this device</p>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="/">Home</a><a href="/demo">Demo</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a>
+        </nav>
       </header>
 
       <main id="main">
         <section class="hero" aria-labelledby="page-title">
           <div class="hero-copy">
-            <p class="eyebrow">Calendar details, ready to pass on</p>
-            <h1 id="page-title">Pass the event.<br /><em>Not the calendar.</em></h1>
-            <p class="hero-lede">Turn an invite into one clear card with the right time, place, and joining link. No account. Nothing uploaded.</p>
-            <a class="hero-jump" href="#builder">Make a handoff card <span aria-hidden="true">↓</span></a>
+            <p class="eyebrow">Calendar Handoff Card</p>
+            <h1 id="page-title">Create a shareable event card</h1>
+            <p class="hero-lede">For families and small teams when an invite is hard to open or crosses calendar apps.</p>
+            <div class="hero-actions">
+              <a class="hero-jump hero-primary" href="/demo">Try it with sample data <span aria-hidden="true">→</span></a>
+              <span>See a filled event card with local times and sharing options.</span>
+            </div>
+            <ul class="hero-facts" aria-label="Product facts"><li>No account</li><li>Event details stay in your browser</li><li>Works offline after the first visit</li></ul>
           </div>
           <picture class="hero-art">
             <source srcset="/assets/calendar-bridge-520.webp 520w, /assets/calendar-bridge-720.webp 720w, /assets/calendar-bridge-1200.webp 1200w" sizes="(max-width: 680px) 130vw, (max-width: 940px) 112vw, 58vw" type="image/webp" />
@@ -38,21 +57,26 @@
           <strong>Offline, still useful.</strong> Your saved page can keep making cards; links just will not open until you reconnect.
         </div>
 
+        <section id="demo-banner" class="demo-banner" aria-label="Demo mode" hidden>
+          <strong>Demo — sample data, nothing is saved</strong>
+          <div><button id="reset-demo" class="text-button" type="button">Reset demo</button><a id="start-real" href="/">Start for real</a></div>
+        </section>
+
         <section id="builder" class="builder" aria-labelledby="builder-title">
           <div class="editor-column">
             <div class="section-heading">
               <p class="step-label">01 / Source</p>
-              <h2 id="builder-title">What are you handing over?</h2>
-              <p>Type the essentials or bring in an <abbr title="iCalendar">ICS</abbr> file. Everything is processed here in your browser.</p>
+              <h2 id="builder-title">Add event details</h2>
+              <p>Type the details or import a calendar file (.ics). Processing happens in this browser.</p>
             </div>
 
             <div class="import-strip">
               <button id="choose-ics-file" class="file-button" type="button">
                 <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 16V3m0 0L7 8m5-5 5 5M5 13v7h14v-7"/></svg>
-                Import an ICS file
+                Import calendar file
               </button>
               <input id="ics-file" type="file" accept=".ics,text/calendar" aria-label="ICS file input" tabindex="-1" />
-              <button id="paste-ics-button" class="text-button" type="button">Paste ICS text</button>
+              <button id="paste-ics-button" class="text-button" type="button">Paste calendar text</button>
               <span class="import-note">First event only</span>
             </div>
 
@@ -133,7 +157,7 @@
               <div class="preview-heading">
                 <div>
                   <p class="step-label">02 / Check</p>
-                  <h2 id="preview-title">The handoff</h2>
+              <h2 id="preview-title">Event card preview</h2>
                 </div>
                 <span id="card-state" class="state-stamp">Waiting for a name</span>
               </div>
@@ -150,7 +174,7 @@
               <div class="timezone-panel">
                 <div class="timezone-title">
                   <h3>Time check</h3>
-                  <span>Same moment, clear labels</span>
+                  <span>Compare local times</span>
                 </div>
                 <div id="timezone-list" class="timezone-list">
                   <p class="empty-note">Add a valid date and time to compare timezones.</p>
@@ -167,8 +191,8 @@
         <section class="share-section" aria-labelledby="share-title">
           <div class="share-intro">
             <p class="step-label">03 / Pass it on</p>
-            <h2 id="share-title">Choose the channel, not another platform.</h2>
-            <p>Plain text works everywhere. Image and PDF are easy to spot in busy chats. Calendar download works with most calendar apps.</p>
+            <h2 id="share-title">Choose a sharing format</h2>
+            <p>Copy plain text for chat or email. Download an image, PDF, or calendar file.</p>
           </div>
 
           <div class="privacy-options">
@@ -185,13 +209,13 @@
               <input id="include-qr" type="checkbox" />
               <span aria-hidden="true"></span> Encode the joining link as a QR
             </label>
-            <p id="privacy-option-note">Off by default. Plain-text copy and calendar files include all entered details.</p>
+            <p id="privacy-option-note">These details are off by default in image and PDF downloads.</p>
           </div>
 
           <div class="share-actions" aria-describedby="share-help">
             <button id="copy-text" class="action-card action-primary" type="button">
               <span class="action-icon" aria-hidden="true">Aa</span>
-              <span><strong>Copy plain text</strong><small>Best for any chat or email</small></span>
+              <span><strong>Copy plain text</strong><small>For chat or email</small></span>
             </button>
             <button id="download-image" class="action-card" type="button">
               <span class="action-icon" aria-hidden="true">▧</span>
@@ -199,11 +223,11 @@
             </button>
             <button id="download-pdf" class="action-card" type="button">
               <span class="action-icon" aria-hidden="true">PDF</span>
-              <span><strong>Download PDF</strong><small>Compact, easy to print</small></span>
+              <span><strong>Download PDF</strong><small>PDF file for sharing or printing</small></span>
             </button>
             <button id="download-ics" class="action-card" type="button">
               <span class="action-icon" aria-hidden="true">＋</span>
-              <span><strong>Add to calendar</strong><small>Universal .ics download</small></span>
+              <span><strong>Download calendar file</strong><small>ICS file to import into a calendar</small></span>
             </button>
             <button id="native-share" class="action-card" type="button" hidden>
               <span class="action-icon" aria-hidden="true">↗</span>
@@ -214,20 +238,20 @@
         </section>
 
         <section class="trust-strip" aria-label="Privacy facts">
-          <div><strong>Local by design</strong><span>No event data leaves this browser.</span></div>
-          <div><strong>No account</strong><span>Open it, make the card, move on.</span></div>
-          <div><strong>Works offline</strong><span>After the first visit, the tool travels too.</span></div>
+          <div><strong>Privacy</strong><span>Event details stay in your browser.</span></div>
+          <div><strong>No account</strong><span>Make a card without signing in.</span></div>
+          <div><strong>Offline</strong><span>Works offline after the first visit.</span></div>
         </section>
       </main>
 
       <footer>
-        <p><strong>Calendar Handoff Card</strong> is a free, open-source utility from the Param Factory.</p>
+        <p><strong>Calendar Handoff Card</strong> makes event cards from details or calendar files.</p>
         <nav aria-label="Legal">
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
           <a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a>
         </nav>
-        <p class="asset-note">The paper-collage artwork was generated for this product with Azure OpenAI. No tracking pixels or analytics.</p>
+        <p class="asset-note">Original paper-collage artwork was generated for this product. Built by Param Factory · build 468dc17.</p>
       </footer>
     </div>
 
@@ -236,7 +260,7 @@
         <div class="dialog-heading">
           <div>
             <p class="step-label">Import</p>
-            <h2 id="ics-dialog-title">Paste ICS text</h2>
+            <h2 id="ics-dialog-title">Paste calendar text</h2>
           </div>
           <button class="dialog-close" value="cancel" aria-label="Close ICS import">×</button>
         </div>
