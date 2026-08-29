@@ -1,23 +1,24 @@
-# Calendar Handoff Card — Review 2 handoff
+# Calendar Handoff Card — Polish 2 handoff
 
-## What was done
+## Completed repair
 
-An independent, no-code adversarial review was completed against the live production site and repository commit `61ae1a9`. The report is [review-2.md](review-2.md). It records a **FAIL** with four blocking live defects and two minor copy/claim defects.
+Repaired every finding in [review-1.md](review-1.md) and [review-2.md](review-2.md). The product remains a Vite + TypeScript static site with its paper-collage visual identity.
 
-No product code was changed. This handoff and the review are the only intended repository changes.
+- Commit `be8dc9b47319b9ae7f7e5117fe0b78d5e0231408` removes the false home demo banner, emits real static documents for `/demo`, `/privacy`, and `/terms`, restores Back/Forward heading focus, supplies an HTTP 404 path, completes the 404 shell/metadata, removes stale footer/build copy, and removes decorative labels.
+- Commit `4d8ec5379f5274bfbb0efbc14d43eb9d63a2f2d0` corrects the direct-404 red label to accessible contrast after the new 404 Axe check caught it.
+- `.factory/polish-2.md` maps F-1-1 through F-1-34 and F-2-1 through F-2-6 to changes and evidence.
 
-## How verified
+## Verification
 
-- Cold fresh-browser visits at 390 × 844 and 1440 × 1000 to `/`.
-- Fresh `/demo` journey: sample seed, visible banner, reset, start-for-real, storage namespace, request log, and mobile rendering.
-- A fresh local clone at `/tmp/calendar-handoff-card-review2`: `npm ci`, `npm run test:unit` (12 passing), `npm run build` (passing), and every command declared in `.factory/claims.json` (all 12 passing).
-- Production route/link crawl, metadata inspection, browser console capture, and Axe serious/critical check at mobile and desktop (none on home/demo).
-- Current code and every earlier review/polish/handoff record were inspected; the report maps F-1-1 through F-1-34 individually.
+- Final clean clone: `/tmp/calendar-handoff-card-polish2-final.pD7WTb/repo`.
+- `npm ci` passed with no audit vulnerabilities.
+- `npm test` passed: 12 Vitest unit tests; 26 Playwright checks passed; PNG and PDF download checks intentionally skip only their mobile duplicate (2 skips). All 12 tagged claim tests ran in both desktop/mobile projects through `/demo`.
+- Every exact command declared by `.factory/claims.json` was also run from a clean clone at `/tmp/calendar-handoff-card-polish2-clean.Kj3iJp/repo`; all passed. PNG/PDF each passed on desktop and intentionally skipped their duplicate mobile check.
+- `npm run build` passed and writes `dist/index.html`, `dist/demo/index.html`, `dist/privacy/index.html`, `dist/terms/index.html`, and the designed 404 assets.
+- `/opt/fleet/lib/verify-url.sh` passed locally for `/` and `/404.html` under the deployment CSP. Evidence: `.factory/evidence/polish-2-local/verify.json`, `.factory/evidence/polish-2-local/screenshot-mobile.png`, `.factory/evidence/polish-2-404/verify.json`, and `.factory/evidence/polish-2-404/screenshot-mobile.png`.
+- Playwright Axe checks found no serious/critical issue on the home page (desktop/mobile) or direct 404 (desktop/mobile). The route regression asserts an unknown path returns HTTP 404, direct 404 has no console errors, normal home has no demo storage/banner, and Back/Forward restores h1 focus.
+- Initial built JS is 50,425 bytes and CSS is 17,953 bytes before gzip; both are within budget.
 
-## Remaining work
+## Deployment status
 
-1. Route unknown paths to a real 404 response instead of the home page.
-2. Make `/404.html` CSP-compliant and complete its route metadata/footer shell.
-3. Prevent the demo banner from rendering on the normal home page; add a regression test for that state.
-4. Focus the destination h1 on browser Back/Forward, then test it.
-5. Remove or verify stale footer provenance/build claims and simplify decorative stage labels.
+The completed repair was pushed to `origin/main` at `4d8ec53` (`45feb41..4d8ec53`). As of `2026-08-29T00:43Z`, the live custom domain still serves the previous artifact: `/not-a-real-page` returns 200 with the old home title and the old stage labels. I attempted the work-order static deployment after a successful local build using both `calendar-handoff-card` and the DNS-resolved Static Web App name `icy-glacier-06f41f70f`; the supplied workload identity authenticated, but `swa deploy … --env production --no-use-keychain` stalled during Azure resource resolution without a deployment result. This repeats the Azure control-plane blocker recorded in the prior handoff. No secrets were written or exposed. A successful factory deployment must be followed by the live route/404 cold check specified above.
