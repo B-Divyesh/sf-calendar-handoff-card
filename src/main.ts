@@ -1,6 +1,6 @@
 import "./styles.css";
 import { buildIcs, parseIcs } from "./ics";
-import { cardPdf, canvasBlob, downloadBlob, plainText, renderCard, safeFileName } from "./output";
+import { cardPdf, downloadBlob, pngCardBlob, plainText, renderCard, safeFileName } from "./output";
 import { eventInstants, formatDateRange, formatInZone, formatWallParts, timeZoneLabel } from "./time";
 import type { EventDraft, ExportOptions } from "./types";
 
@@ -45,7 +45,8 @@ function sharedHeader(): string {
 }
 
 function sharedFooter(): string {
-  return `<footer><p><strong>Calendar Handoff Card</strong> makes event cards from details or calendar files.</p><nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a></nav><p class="asset-note">Built by Param Factory.</p></footer>`;
+  const buildId = document.querySelector('meta[name="build-id"]')?.getAttribute("content") || "unknown";
+  return `<footer><p><strong>Calendar Handoff Card</strong> makes event cards from details or calendar files.</p><nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a></nav><p class="asset-note">Built by Param Factory · build <span data-build-id>${buildId}</span>.</p></footer>`;
 }
 
 function focusRouteHeading(): void {
@@ -84,7 +85,7 @@ function renderLegalPage(kind: "privacy" | "terms"): boolean {
           <h2>Questions</h2>
           <p>Review or report an issue through the project’s <a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">public source repository</a>.</p>
         ` : `
-          <p>Calendar Handoff Card is a free tool for making an event card from details or a calendar file.</p>
+          <p>Use this tool to make an event card from details or a calendar file.</p>
           <h2>Your responsibility</h2>
           <p>Check event details and local times before sharing. Only share links and notes you may share.</p>
           <h2>No warranty</h2>
@@ -92,7 +93,7 @@ function renderLegalPage(kind: "privacy" | "terms"): boolean {
           <h2>Acceptable use</h2>
           <p>Do not use the service to distribute unlawful, deceptive, harmful, or privacy-invasive content, or to interfere with the service.</p>
           <h2>Open source</h2>
-          <p>The software is available under the MIT License. These service terms do not limit rights granted by that license.</p>
+          <p><a href="https://github.com/B-Divyesh/sf-calendar-handoff-card/blob/main/LICENSE">Read the license</a>.</p>
         `}
         <p><a href="/">← Return to the card maker</a></p>
       </article>
@@ -127,6 +128,15 @@ window.addEventListener("pageshow", (event) => {
 
 function initializeApp(): void {
   const isDemo = route === "/demo" || new URLSearchParams(window.location.search).get("demo") === "1" || sessionStorage.getItem("demo:calendar-handoff-card") === "active";
+  const landingHero = requiredElement<HTMLElement>("#landing-hero");
+  const demoBanner = requiredElement<HTMLElement>("#demo-banner");
+  const pageTitle = requiredElement<HTMLHeadingElement>("#page-title");
+  document.body.classList.toggle("demo-mode", isDemo);
+  if (isDemo) {
+    landingHero.hidden = true;
+    demoBanner.prepend(pageTitle);
+    pageTitle.textContent = "Try a sample event card";
+  }
   if (!isDemo) sessionStorage.removeItem("demo:calendar-handoff-card");
   setRouteMeta(
     isDemo ? "Demo — Calendar Handoff Card" : "Calendar Handoff Card — create an event card",
@@ -289,7 +299,7 @@ function initializeApp(): void {
       cardPrivate.textContent = privateBits.join("\n\n");
       renderTimezones(event);
     } else {
-      cardDate.textContent = event.title && error ? error : "The date and time will land here.";
+      cardDate.textContent = event.title && error ? error : "The event date and time will appear here.";
       cardDetails.innerHTML = "";
       cardPrivate.textContent = "";
       timezoneList.innerHTML = `<p class="empty-note">${event.title && error ? escapeHtml(error) : "Add a valid date and time to compare timezones."}</p>`;
@@ -392,20 +402,29 @@ function initializeApp(): void {
     const event = validEvent();
     if (!event) return;
     const text = plainText(event, deviceZone, recipientSelect.value);
+    let copied = false;
     try {
       await navigator.clipboard.writeText(text);
+      copied = true;
     } catch {
-      const fallback = document.createElement("textarea");
-      fallback.value = text;
-      fallback.style.position = "fixed";
-      fallback.style.opacity = "0";
-      document.body.append(fallback);
-      fallback.select();
-      const copied = document.execCommand("copy");
-      fallback.remove();
-      if (!copied) throw new Error("Clipboard permission was denied.");
+      try {
+        const fallback = document.createElement("textarea");
+        fallback.value = text;
+        fallback.style.position = "fixed";
+        fallback.style.opacity = "0";
+        document.body.append(fallback);
+        fallback.select();
+        copied = document.execCommand("copy");
+        fallback.remove();
+      } catch {
+        copied = false;
+      }
     }
-    showToast("Plain-text handoff copied.");
+    if (!copied) {
+      showToast("Clipboard access was denied. Copy the event details manually or try again after allowing clipboard access.");
+      return;
+    }
+    showToast("Plain text copied.");
   }
 
   async function exportImage(): Promise<void> {
@@ -413,7 +432,7 @@ function initializeApp(): void {
     if (!event) return;
     showToast("Drawing the image card…");
     const canvas = await renderCard(event, readOptions());
-    downloadBlob(await canvasBlob(canvas), safeFileName(event.title, "png"));
+    downloadBlob(await pngCardBlob(canvas, event, readOptions()), safeFileName(event.title, "png"));
     showToast("Image card downloaded.");
   }
 
@@ -422,7 +441,7 @@ function initializeApp(): void {
     if (!event) return;
     showToast("Composing the PDF card…");
     const canvas = await renderCard(event, readOptions());
-    downloadBlob(await cardPdf(canvas), safeFileName(event.title, "pdf"));
+    downloadBlob(await cardPdf(canvas, event, readOptions()), safeFileName(event.title, "pdf"));
     showToast("PDF card downloaded.");
   }
 
@@ -444,14 +463,14 @@ function initializeApp(): void {
     const file = fileInput.files?.[0];
     if (!file) return;
     if (file.size > 2_000_000) {
-      showToast("That ICS file is over 2 MB. Choose a smaller calendar export.");
+      showToast("That calendar file is over 2 MB. Choose a smaller calendar file.");
       fileInput.value = "";
       return;
     }
     try {
       importText(await file.text());
     } catch (caught) {
-      showToast(caught instanceof Error ? caught.message : "The ICS file could not be read.");
+      showToast(caught instanceof Error ? caught.message : "The calendar file could not be read.");
     } finally {
       fileInput.value = "";
     }
@@ -470,11 +489,11 @@ function initializeApp(): void {
       dialog.close();
       icsText.value = "";
     } catch (caught) {
-      dialogError.textContent = caught instanceof Error ? caught.message : "The ICS text could not be read.";
+      dialogError.textContent = caught instanceof Error ? caught.message : "The calendar text could not be read.";
     }
   });
 
-  requiredElement<HTMLButtonElement>("#copy-text").addEventListener("click", () => void copyText().catch(reportActionError));
+  requiredElement<HTMLButtonElement>("#copy-text").addEventListener("click", () => void copyText());
   requiredElement<HTMLButtonElement>("#download-image").addEventListener("click", () => void exportImage().catch(reportActionError));
   requiredElement<HTMLButtonElement>("#download-pdf").addEventListener("click", () => void exportPdf().catch(reportActionError));
   requiredElement<HTMLButtonElement>("#download-ics").addEventListener("click", exportIcs);
@@ -487,16 +506,21 @@ function initializeApp(): void {
       if (!event) return;
       try {
         await navigator.share({ title: event.title, text: plainText(event, deviceZone, recipientSelect.value) });
-        showToast("Handoff sent to your share sheet.");
+        showToast("Event details sent to your sharing menu.");
       } catch (caught) {
         if (caught instanceof DOMException && caught.name === "AbortError") return;
-        reportActionError(caught);
+        showToast("The sharing menu could not open. Copy plain text or download a file instead.");
       }
     });
   }
 
   function reportActionError(caught: unknown): void {
-    showToast(caught instanceof Error ? caught.message : "That export did not finish. Try another format.");
+    const message = caught instanceof Error ? caught.message : "";
+    if (/image card|encoded|canvas/i.test(message)) {
+      showToast("This browser could not create the image card. Download the PDF or calendar file instead.");
+      return;
+    }
+    showToast("That download did not finish. Try the PDF or calendar file instead.");
   }
 
   function updateConnection(): void {
@@ -508,7 +532,7 @@ function initializeApp(): void {
   render();
 
   if (isDemo) {
-    requiredElement<HTMLElement>("#demo-banner").hidden = false;
+    demoBanner.hidden = false;
     requiredElement<HTMLButtonElement>("#reset-demo").addEventListener("click", seedDemo);
     requiredElement<HTMLAnchorElement>("#start-real").addEventListener("click", () => sessionStorage.removeItem("demo:calendar-handoff-card"));
     seedDemo();

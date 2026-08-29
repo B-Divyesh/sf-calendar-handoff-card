@@ -2,6 +2,39 @@ import QRCode from "qrcode";
 import type { EventDraft, ExportOptions } from "./types";
 import { eventInstants, formatDateRange, formatInZone, timeZoneLabel } from "./time";
 
+export interface CardManifest {
+  card: "Calendar event card";
+  title: string;
+  date: string;
+  timezone: string;
+  place?: string;
+  organizer?: string;
+  rsvp?: string;
+  joiningLink?: string;
+  notes?: string;
+  qrUrl?: string;
+}
+
+/**
+ * This is the single list of details used to draw the downloadable card and
+ * to describe it in the file metadata. Private fields are intentionally
+ * absent until their matching print option is selected.
+ */
+export function cardManifest(event: EventDraft, options: ExportOptions): CardManifest {
+  return {
+    card: "Calendar event card",
+    title: event.title,
+    date: formatDateRange(event),
+    timezone: timeZoneLabel(event.timeZone),
+    ...(event.location ? { place: event.location } : {}),
+    ...(event.organizer ? { organizer: event.organizer } : {}),
+    ...(event.rsvp ? { rsvp: event.rsvp } : {}),
+    ...(options.includeLink && event.joinUrl ? { joiningLink: event.joinUrl } : {}),
+    ...(options.includeDescription && event.description ? { notes: event.description } : {}),
+    ...(options.includeQr && event.joinUrl ? { qrUrl: event.joinUrl } : {})
+  };
+}
+
 export function plainText(event: EventDraft, deviceZone: string, recipientZone: string): string {
   const lines = [event.title, formatDateRange(event), `Event timezone: ${timeZoneLabel(event.timeZone)}`];
 
@@ -107,8 +140,9 @@ async function qrCanvas(url: string): Promise<HTMLCanvasElement> {
 }
 
 export async function renderCard(event: EventDraft, options: ExportOptions): Promise<HTMLCanvasElement> {
-  const hasQr = Boolean(options.includeQr && event.joinUrl);
-  const hasNotes = Boolean(options.includeDescription && event.description);
+  const manifest = cardManifest(event, options);
+  const hasQr = Boolean(manifest.qrUrl);
+  const hasNotes = Boolean(manifest.notes);
   const height = hasNotes ? 1500 : 1260;
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
@@ -161,7 +195,7 @@ export async function renderCard(event: EventDraft, options: ExportOptions): Pro
   y += 26;
   ctx.fillStyle = "#17337a";
   ctx.font = "bold 31px Arial, sans-serif";
-  y = drawWrapped(ctx, formatDateRange(event), left, y, contentWidth, 42, 4);
+  y = drawWrapped(ctx, manifest.date, left, y, contentWidth, 42, 4);
 
   y += 30;
   ctx.strokeStyle = "#8e7e6e";
@@ -184,14 +218,14 @@ export async function renderCard(event: EventDraft, options: ExportOptions): Pro
     y += 22;
   };
 
-  detail("Timezone", timeZoneLabel(event.timeZone));
-  if (event.location) detail("Place", event.location);
-  if (event.organizer) detail("Organizer", event.organizer);
-  if (event.rsvp) detail("RSVP", event.rsvp);
-  if (options.includeLink && event.joinUrl) detail("Join", event.joinUrl);
+  detail("Timezone", manifest.timezone);
+  if (manifest.place) detail("Place", manifest.place);
+  if (manifest.organizer) detail("Organizer", manifest.organizer);
+  if (manifest.rsvp) detail("RSVP", manifest.rsvp);
+  if (manifest.joiningLink) detail("Join", manifest.joiningLink);
 
-  if (hasQr) {
-    const qr = await qrCanvas(event.joinUrl);
+  if (manifest.qrUrl) {
+    const qr = await qrCanvas(manifest.qrUrl);
     ctx.drawImage(qr, 842, 385, 215, 215);
     ctx.fillStyle = "#201b18";
     ctx.font = "bold 19px Arial, sans-serif";
@@ -216,7 +250,7 @@ export async function renderCard(event: EventDraft, options: ExportOptions): Pro
     y += 38;
     ctx.fillStyle = "#201b18";
     ctx.font = "500 26px Arial, sans-serif";
-    drawWrapped(ctx, event.description, left, y, 900, 36, 8);
+    drawWrapped(ctx, manifest.notes || "", left, y, 900, 36, 8);
   }
 
   const footerY = height - 180;
@@ -239,6 +273,63 @@ export function canvasBlob(canvas: HTMLCanvasElement, type = "image/png", qualit
   });
 }
 
+function crc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function uint32(value: number): Uint8Array {
+  return new Uint8Array([(value >>> 24) & 0xff, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff]);
+}
+
+function readUint32(bytes: Uint8Array, offset: number): number {
+  return ((bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3]) >>> 0;
+}
+
+function pngTextChunk(keyword: string, value: string): Uint8Array {
+  const text = new TextEncoder().encode(`${keyword}\0${value}`);
+  const type = new TextEncoder().encode("tEXt");
+  const crcInput = new Uint8Array(type.length + text.length);
+  crcInput.set(type);
+  crcInput.set(text, type.length);
+  const chunk = new Uint8Array(12 + text.length);
+  chunk.set(uint32(text.length), 0);
+  chunk.set(type, 4);
+  chunk.set(text, 8);
+  chunk.set(uint32(crc32(crcInput)), 8 + text.length);
+  return chunk;
+}
+
+async function addPngManifest(blob: Blob, manifest: CardManifest): Promise<Blob> {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let offset = 8;
+  let iendOffset = -1;
+  while (offset + 12 <= bytes.length) {
+    const length = readUint32(bytes, offset);
+    const type = String.fromCharCode(...bytes.slice(offset + 4, offset + 8));
+    if (type === "IEND") {
+      iendOffset = offset;
+      break;
+    }
+    offset += 12 + length;
+  }
+  if (iendOffset < 0) throw new Error("The image card could not be encoded.");
+  const annotation = pngTextChunk("CalendarHandoffCard", JSON.stringify(manifest));
+  const output = new Uint8Array(bytes.length + annotation.length);
+  output.set(bytes.slice(0, iendOffset));
+  output.set(annotation, iendOffset);
+  output.set(bytes.slice(iendOffset), iendOffset + annotation.length);
+  return new Blob([output], { type: "image/png" });
+}
+
+export async function pngCardBlob(canvas: HTMLCanvasElement, event: EventDraft, options: ExportOptions): Promise<Blob> {
+  return addPngManifest(await canvasBlob(canvas), cardManifest(event, options));
+}
+
 function ascii(value: string): Uint8Array {
   return new TextEncoder().encode(value);
 }
@@ -254,8 +345,13 @@ function concat(chunks: Uint8Array[]): Uint8Array {
   return output;
 }
 
-export async function cardPdf(canvas: HTMLCanvasElement): Promise<Blob> {
+function pdfLiteral(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)").replace(/[\r\n]/g, " ");
+}
+
+export async function cardPdf(canvas: HTMLCanvasElement, event: EventDraft, options: ExportOptions): Promise<Blob> {
   const jpeg = new Uint8Array(await (await canvasBlob(canvas, "image/jpeg", 0.9)).arrayBuffer());
+  const manifest = encodeURIComponent(JSON.stringify(cardManifest(event, options)));
   const pageWidth = 612;
   const pageHeight = 792;
   const drawWidth = 540;
@@ -275,7 +371,8 @@ export async function cardPdf(canvas: HTMLCanvasElement): Promise<Blob> {
       jpeg,
       ascii("\nendstream")
     ]),
-    ascii(`<< /Length ${ascii(content).length} >>\nstream\n${content}endstream`)
+    ascii(`<< /Length ${ascii(content).length} >>\nstream\n${content}endstream`),
+    ascii(`<< /Title (Calendar event card) /Subject (${pdfLiteral(manifest)}) >>`)
   ];
 
   const chunks: Uint8Array[] = [ascii("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n")];
@@ -292,7 +389,7 @@ export async function cardPdf(canvas: HTMLCanvasElement): Promise<Blob> {
   for (let i = 1; i <= objects.length; i += 1) {
     xref += `${offsets[i].toString().padStart(10, "0")} 00000 n \n`;
   }
-  xref += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
+  xref += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`;
   chunks.push(ascii(xref));
   return new Blob([concat(chunks)], { type: "application/pdf" });
 }

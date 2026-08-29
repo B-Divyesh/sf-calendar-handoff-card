@@ -6,7 +6,7 @@ It is for families and small teams when an invite is hard to open or crosses cal
 
 Live product: <https://calendar-handoff-card.sociobot.in>
 
-## Use it
+## Try the event-card demo
 
 Open [the demo](https://calendar-handoff-card.sociobot.in/demo) to see a filled event card. Add event details, check local times, then choose a sharing format.
 
@@ -15,7 +15,7 @@ Open [the demo](https://calendar-handoff-card.sociobot.in/demo) to see a filled 
 - Compare event, device, and recipient times.
 - Keep private link and note choices off until you select them.
 
-The app has no account flow. Event details are processed in the browser. The app works offline after its first visit. Each statement is covered by the listed [claim tests](.factory/claims.json).
+The app has no account flow. Event details are processed in the browser. The app works offline after its first visit. Product claims and their tests are listed in [`.factory/claims.json`](.factory/claims.json).
 
 ## Develop
 

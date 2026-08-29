@@ -128,6 +128,7 @@ footer {
 }
 
 .wordmark {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -353,10 +354,7 @@ h1 em {
 
 .demo-banner {
   min-height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  display: block;
   margin-top: 24px;
   padding: 8px 14px 8px 18px;
   color: var(--ink);
@@ -365,8 +363,35 @@ h1 em {
   box-shadow: 4px 4px 0 var(--red);
 }
 
-.demo-banner div { display: flex; align-items: center; gap: 14px; }
+.demo-banner-row,
+.demo-banner-row > div { display: flex; align-items: center; gap: 14px; }
+.demo-banner-row { justify-content: space-between; }
 .demo-banner .text-button { min-height: 40px; }
+
+.demo-mode #landing-hero {
+  display: none;
+}
+
+.demo-mode .demo-banner {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  margin-top: 0;
+}
+
+.demo-mode .demo-banner h1 {
+  margin: 4px 0 12px;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+}
+
+.demo-mode .builder {
+  padding-top: 34px;
+}
+
+.demo-mode .preview-column {
+  order: -1;
+}
 
 .builder {
   display: grid;
@@ -838,6 +863,96 @@ textarea[aria-invalid="true"] {
   border-bottom: 2px solid var(--ink);
 }
 
+.how-it-works {
+  padding: 80px 0;
+  border-top: 2px solid var(--ink);
+}
+
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: how-step;
+}
+
+.how-steps li {
+  position: relative;
+  min-height: 150px;
+  padding: 50px 20px 22px;
+  background: rgb(255 249 234 / 72%);
+  border: 2px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--cobalt);
+  counter-increment: how-step;
+}
+
+.how-steps li::before {
+  content: counter(how-step);
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--red);
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.how-steps strong,
+.how-steps span {
+  display: block;
+}
+
+.how-steps strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.how-steps span {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.limits-section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 50px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.limits-section h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.08;
+}
+
+.limits-section p {
+  max-width: 62ch;
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+
+.limits-section > a {
+  flex: 0 0 auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 760;
+}
+
 .share-section {
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
@@ -1119,6 +1234,10 @@ dialog::backdrop {
     grid-template-columns: 1fr;
   }
 
+  .how-steps {
+    grid-template-columns: 1fr;
+  }
+
   .share-intro { grid-row: auto; }
   .share-help { grid-column: 1; }
 }
@@ -1141,8 +1260,8 @@ dialog::backdrop {
     font-size: 0.92rem;
   }
 
-  .site-nav { gap: 4px 10px; font-size: 0.78rem; }
-  .site-nav a { min-height: 30px; }
+  .site-nav { gap: 2px 10px; font-size: 0.78rem; }
+  .site-nav a { min-height: 44px; }
 
   .hero {
     min-height: auto;
@@ -1172,6 +1291,11 @@ dialog::backdrop {
   .hero-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
 
   .demo-banner { align-items: flex-start; flex-direction: column; }
+  .demo-banner-row,
+  .demo-banner-row > div { align-items: flex-start; flex-direction: column; }
+  .demo-banner-row > div { gap: 2px; }
+  .demo-mode .demo-banner h1 { font-size: 2rem; }
+  .demo-mode .builder { padding-top: 24px; }
 
   .builder {
     gap: 62px;
@@ -1243,6 +1367,20 @@ dialog::backdrop {
 
   .share-section {
     padding: 64px 0;
+  }
+
+  .how-it-works {
+    padding: 64px 0;
+  }
+
+  .how-steps li {
+    min-height: 0;
+  }
+
+  .limits-section {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 42px 0;
   }
 
   .privacy-options {

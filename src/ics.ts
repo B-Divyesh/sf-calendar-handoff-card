@@ -46,7 +46,7 @@ function eventLines(text: string): { lines: string[]; count: number } {
       current = null;
     } else if (current) current.push(line);
   }
-  if (!events.length) throw new Error("No VEVENT was found. Paste a complete ICS event or choose another file.");
+  if (!events.length) throw new Error("No event was found. Paste a complete calendar event or choose another calendar file.");
   return { lines: events[0], count: events.length };
 }
 
@@ -62,7 +62,7 @@ function parseDate(property: ParsedProperty, fallbackZone: string): IcsDate {
   const raw = property.value.trim();
   const isDate = property.params.VALUE?.toUpperCase() === "DATE" || /^\d{8}$/.test(raw);
   if (isDate) {
-    if (!/^\d{8}$/.test(raw)) throw new Error("The ICS file contains an unsupported all-day date.");
+    if (!/^\d{8}$/.test(raw)) throw new Error("This calendar file has an unsupported all-day date.");
     return {
       allDay: true,
       date: `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`,
@@ -72,7 +72,7 @@ function parseDate(property: ParsedProperty, fallbackZone: string): IcsDate {
   }
 
   const match = raw.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z)?$/);
-  if (!match) throw new Error("The ICS file uses a date format this tool cannot safely interpret.");
+  if (!match) throw new Error("This calendar file uses a date format this tool cannot safely interpret.");
   const [, year, month, day, hour, minute, second = "00", utc] = match;
   if (utc) {
     const instant = new Date(Date.UTC(+year, +month - 1, +day, +hour, +minute, +second));
@@ -99,7 +99,7 @@ function findUrl(text: string): string {
 }
 
 export function parseIcs(text: string, deviceZone = "UTC"): { event: EventDraft; eventCount: number; warnings: string[] } {
-  if (!text.trim()) throw new Error("Paste ICS text first.");
+  if (!text.trim()) throw new Error("Paste calendar text first.");
   const { lines, count } = eventLines(text);
   const properties = lines.map(parseProperty).filter((item): item is ParsedProperty => Boolean(item));
   const first = (name: string) => properties.find((property) => property.name === name);

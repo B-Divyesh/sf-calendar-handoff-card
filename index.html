@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#f3e9d2" />
+    <meta name="build-id" content="__BUILD_ID__" />
     <meta name="description" content="Create a shareable event card for families and small teams when a calendar invite is hard to open." />
     <link rel="canonical" href="https://calendar-handoff-card.sociobot.in/" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -35,13 +36,13 @@
       </header>
 
       <main id="main">
-        <section class="hero" aria-labelledby="page-title">
+        <section id="landing-hero" class="hero" aria-labelledby="page-title">
           <div class="hero-copy">
             <p class="eyebrow">Calendar Handoff Card</p>
             <h1 id="page-title">Create a shareable event card</h1>
             <p class="hero-lede">For families and small teams when an invite is hard to open or crosses calendar apps.</p>
             <div class="hero-actions">
-              <a class="hero-jump hero-primary" href="/demo">Try it with sample data <span aria-hidden="true">→</span></a>
+              <a class="hero-jump hero-primary" href="/?demo=1">Try it with sample data <span aria-hidden="true">→</span></a>
               <span>See a filled event card with local times and sharing options.</span>
             </div>
             <ul class="hero-facts" aria-label="Product facts"><li>No account</li><li>Event details stay in your browser</li><li>Works offline after the first visit</li></ul>
@@ -54,12 +55,11 @@
         </section>
 
         <div id="connection-status" class="connection-status" role="status" hidden>
-          <strong>Offline, still useful.</strong> Your saved page can keep making cards; links just will not open until you reconnect.
+          <strong>You are offline.</strong> The saved app and sample still open offline.
         </div>
 
         <section id="demo-banner" class="demo-banner" aria-label="Demo mode" hidden>
-          <strong>Demo — sample data, nothing is saved</strong>
-          <div><button id="reset-demo" class="text-button" type="button">Reset demo</button><a id="start-real" href="/">Start for real</a></div>
+          <div class="demo-banner-row"><strong>Demo — sample data, nothing is saved</strong><div><button id="reset-demo" class="text-button" type="button">Reset demo</button><a id="start-real" href="/">Start for real</a></div></div>
         </section>
 
         <section id="builder" class="builder" aria-labelledby="builder-title">
@@ -164,7 +164,7 @@
                 <div class="card-registration" aria-hidden="true"></div>
                 <p class="card-kicker">You’re invited</p>
                 <h3 id="card-title">Add an event name to start</h3>
-                <p id="card-date" class="card-date">The date and time will land here.</p>
+                <p id="card-date" class="card-date">The event date and time will appear here.</p>
                 <dl id="card-details" class="card-details"></dl>
                 <div id="card-private" class="card-private"></div>
               </article>
@@ -183,6 +183,26 @@
               </div>
             </div>
           </aside>
+        </section>
+
+        <section class="how-it-works" aria-labelledby="how-title">
+          <div class="section-heading">
+            <h2 id="how-title">How it works</h2>
+            <p>Use the event card preview to check the details before sharing.</p>
+          </div>
+          <ol class="how-steps">
+            <li><strong>Add or import event details</strong><span>Type the details or use a calendar file.</span></li>
+            <li><strong>Check the local times</strong><span>Compare the event, device, and recipient time.</span></li>
+            <li><strong>Copy or download the event card</strong><span>Choose plain text, an image, a PDF, or a calendar file.</span></li>
+          </ol>
+        </section>
+
+        <section class="limits-section" aria-labelledby="limits-title">
+          <div>
+            <h2 id="limits-title">What this tool does not do</h2>
+            <p>This card maker creates files and copyable text. It does not send invitations or sync calendars.</p>
+          </div>
+          <a href="/privacy">Read how event details are handled</a>
         </section>
 
         <section class="share-section" aria-labelledby="share-title">
@@ -227,7 +247,7 @@
             </button>
             <button id="native-share" class="action-card" type="button" hidden>
               <span class="action-icon" aria-hidden="true">↗</span>
-              <span><strong>Share from device</strong><small>Use your share sheet</small></span>
+              <span><strong>Share from device</strong><small>Open your device’s sharing menu</small></span>
             </button>
           </div>
           <p id="share-help" class="share-help">Add an event name and valid time before exporting.</p>
@@ -247,7 +267,7 @@
           <a href="/terms">Terms</a>
           <a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a>
         </nav>
-        <p class="asset-note">Built by Param Factory.</p>
+        <p class="asset-note">Built by Param Factory · build <span data-build-id>__BUILD_ID__</span>.</p>
       </footer>
     </div>
 

@@ -1,4 +1,6 @@
 import { cp, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { join } from "node:path";
 
 const dist = new URL("../dist/", import.meta.url);
@@ -25,4 +27,20 @@ for (const route of ["demo", "privacy", "terms"]) {
   const routeDirectory = new URL(`${route}/`, dist);
   await mkdir(routeDirectory, { recursive: true });
   await cp(new URL("index.html", dist), new URL("index.html", routeDirectory), { recursive: false, force: true });
+}
+
+// The build identifier is taken at build time, after the source commit is
+// known. It is deliberately stamped into every emitted document rather than
+// copied from a stale source constant.
+const run = promisify(execFile);
+let buildId = "unknown";
+try {
+  buildId = (await run("git", ["rev-parse", "--short=7", "HEAD"])).stdout.trim() || buildId;
+} catch {
+  // A source archive can still build, with its unavailable revision made clear.
+}
+for (const page of ["index.html", "404.html", "demo/index.html", "privacy/index.html", "terms/index.html"]) {
+  const pageUrl = new URL(page, dist);
+  const html = await readFile(pageUrl, "utf8");
+  await writeFile(pageUrl, html.replaceAll("__BUILD_ID__", buildId));
 }

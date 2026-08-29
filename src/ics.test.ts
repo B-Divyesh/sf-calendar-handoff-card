@@ -61,7 +61,7 @@ END:VCALENDAR`);
   });
 
   it("fails clearly when no event exists", () => {
-    expect(() => parseIcs("BEGIN:VCALENDAR\nEND:VCALENDAR")).toThrow(/No VEVENT/);
+    expect(() => parseIcs("BEGIN:VCALENDAR\nEND:VCALENDAR")).toThrow(/No event was found/);
   });
 
   it("exports portable UTC timestamps and escaped text", () => {

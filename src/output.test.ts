@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { plainText, safeFileName } from "./output";
+import { cardManifest, plainText, safeFileName } from "./output";
 import type { EventDraft } from "./types";
 
 const event: EventDraft = {
@@ -29,5 +29,18 @@ describe("share output", () => {
 
   it("creates filesystem-safe names", () => {
     expect(safeFileName("Lunch / plans?!", "pdf")).toBe("lunch-plans-handoff.pdf");
+  });
+
+  it("keeps private output fields out of a card manifest until selected", () => {
+    expect(cardManifest(event, { includeLink: false, includeDescription: false, includeQr: false })).not.toMatchObject({
+      joiningLink: expect.anything(),
+      notes: expect.anything(),
+      qrUrl: expect.anything()
+    });
+    expect(cardManifest(event, { includeLink: true, includeDescription: true, includeQr: true })).toMatchObject({
+      joiningLink: "https://example.test/join",
+      notes: "Bring the brief.",
+      qrUrl: "https://example.test/join"
+    });
   });
 });
