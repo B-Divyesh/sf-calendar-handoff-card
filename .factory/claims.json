@@ -1,5 +1,5 @@
 [
-  {"id":"demo-sample","claim":"Try it with sample data opens a filled, resettable sample without using real data.","where":"landing action and demo banner","test":"npm run test:e2e -- --grep @claim:demo-sample","sandbox":"fresh browser context at /demo"},
+  {"id":"demo-sample","claim":"Try it with sample data opens a filled, resettable sample without using real data.","where":"landing action and demo banner","test":"npm run test:e2e -- --grep @claim:demo-sample","sandbox":"fresh browser context at /?demo=1"},
   {"id":"no-account","claim":"Make a sample event card without signing in.","where":"landing facts","test":"npm run test:e2e -- --grep @claim:no-account","sandbox":"fresh browser context at /demo"},
   {"id":"local-processing","claim":"Calendar files are read and downloads are created in your browser; demo requests send no event details.","where":"landing and privacy page","test":"npm run test:e2e -- --grep @claim:local-processing","sandbox":"request log over calendar-text import, copy, PNG, PDF, and calendar-file download at /demo"},
   {"id":"dst-conversion","claim":"The event card shows local times for the event date.","where":"timezone comparison","test":"npm run test:e2e -- --grep @claim:dst-conversion","sandbox":"fixed 2026 DST fixture at /demo"},

@@ -368,16 +368,24 @@ h1 em {
 .demo-banner-row { justify-content: space-between; }
 .demo-banner .text-button { min-height: 40px; }
 
-.demo-mode #landing-hero {
+.demo-mode #landing-hero,
+.demo-initial #landing-hero {
   display: none;
 }
 
-.demo-mode .demo-banner {
+.demo-mode .demo-banner,
+.demo-initial .demo-banner {
   position: sticky;
   z-index: 30;
   top: 0;
   margin-top: 0;
 }
+
+/* route-mode.js sets this class before first paint. Reserve exactly the demo
+   banner's final space while the main module moves the sole page heading. */
+.demo-initial .demo-banner[hidden] { display: block !important; }
+.demo-mode .demo-banner,
+.demo-initial .demo-banner { min-height: 128px; }
 
 .demo-mode .demo-banner h1 {
   margin: 4px 0 12px;
@@ -385,11 +393,13 @@ h1 em {
   line-height: 1;
 }
 
-.demo-mode .builder {
+.demo-mode .builder,
+.demo-initial .builder {
   padding-top: 34px;
 }
 
-.demo-mode .preview-column {
+.demo-mode .preview-column,
+.demo-initial .preview-column {
   order: -1;
 }
 
@@ -1295,7 +1305,10 @@ dialog::backdrop {
   .demo-banner-row > div { align-items: flex-start; flex-direction: column; }
   .demo-banner-row > div { gap: 2px; }
   .demo-mode .demo-banner h1 { font-size: 2rem; }
-  .demo-mode .builder { padding-top: 24px; }
+  .demo-mode .demo-banner,
+  .demo-initial .demo-banner { min-height: 199px; }
+  .demo-mode .builder,
+  .demo-initial .builder { padding-top: 24px; }
 
   .builder {
     gap: 62px;
