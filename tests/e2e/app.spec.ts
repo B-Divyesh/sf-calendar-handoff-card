@@ -141,7 +141,11 @@ test("@claim:demo-sample opens a product-first isolated sample and resets it", a
     expect(box!.y + box!.height).toBeGreaterThan(0);
   }
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  expect((await page.getByLabel("Demo mode").boundingBox())!.y).toBeLessThanOrEqual(100);
+  const stickyBanner = (await page.getByLabel("Demo mode").boundingBox())!;
+  // The banner stays in the top quarter even when its containing main region
+  // reaches its footer boundary; do not couple this behavior to one header height.
+  expect(stickyBanner.y).toBeGreaterThanOrEqual(0);
+  expect(stickyBanner.y).toBeLessThanOrEqual(viewport / 4);
   await page.getByLabel("Event name").fill("Changed sample");
   await page.getByRole("button", { name: "Reset demo" }).click();
   await expect(page.getByLabel("Event name")).toHaveValue(SAMPLE.title);
