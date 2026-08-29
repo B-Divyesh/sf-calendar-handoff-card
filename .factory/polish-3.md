@@ -1,6 +1,6 @@
 # Polish 3 — cumulative finding closure
 
-This record closes every finding in `.factory/review-1.md`, `.factory/review-2.md`, and `.factory/review-3.md`. Every `@claim:` command below was run separately from a clean clone; `npm test` and `npm run build` also passed there. Local visual evidence is under the ignored `.factory/evidence/polish-3-*` directory. The production URLs in the evidence column are rechecked after the final deployment.
+This record closes every finding in `.factory/review-1.md`, `.factory/review-2.md`, and `.factory/review-3.md`. Every `@claim:` command below was run separately from a clean clone; `npm test` and `npm run build` also passed there. Local visual evidence is under the ignored `.factory/evidence/polish-3-*` directory. Production was cold-checked after deployment of build `b762510` at <https://calendar-handoff-card.sociobot.in>.
 
 | Finding | Change made | Evidence |
 | --- | --- | --- |
@@ -72,3 +72,11 @@ This record closes every finding in `.factory/review-1.md`, `.factory/review-2.m
 - `verify-url.sh` passed for `/`, `/?demo=1`, and `/404.html` with `lang=en`, one h1, main landmark, no missing alt text, and no console errors.
 - Playwright Axe checks passed for `/`, `/?demo=1`, `/privacy`, `/terms`, and `/404.html` at desktop and 390px mobile.
 - Mobile Lighthouse for `/?demo=1`: performance 97, accessibility 100, LCP 2.4 s, CLS 0.028.
+
+## Final production evidence
+
+- `verify-url.sh` passed with no console errors for `/`, `/?demo=1`, `/privacy`, and `/terms`; evidence is `.factory/evidence/polish-3-final-{home,demo,privacy,terms}/verify.json`.
+- The 390px cold demo is `.factory/evidence/polish-3-live-demo/cold-mobile-final.png`: the demo h1, persistent banner, and filled card intersect the first viewport.
+- Production Axe found zero serious/critical issues for `/`, `/?demo=1`, `/privacy`, `/terms`, and `/404.html`.
+- Home → Privacy → Back restored the respective h1 focus. `/not-a-real-page` returned HTTP 404 with the designed title and h1.
+- The live PNG/PDF checks saved valid files at `.factory/evidence/polish-3-live-demo/live-card-final.png` and `.factory/evidence/polish-3-live-demo/live-card-final.pdf`.

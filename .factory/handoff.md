@@ -1,42 +1,37 @@
-# Calendar Handoff Card — review 3 handoff
+# Calendar Handoff Card — polish 3 handoff
 
-## Completed
+## Shipped
 
-Performed the required adversarial first-read review against production and source commit `eedb7a291a4268f40d77e60b4ba8594b83af0541`.
+The repaired static artifact from commit `b7625108d3a02533edcd672a3f2458beaa4c9c0f` is deployed to <https://calendar-handoff-card.sociobot.in> through Azure Static Web Apps resource `sf-calendar-handoff-card`.
 
-- Wrote `.factory/review-3.md` with verdict **FAIL**, 5 blocking findings, 15 minor findings, the full landing/README copy audit, all claim results, and a finding-by-finding history check.
-- Confirmed production matches the clean local build by SHA-256 for `index.html`, `index-BzF8CRFr.js`, and `style-agbfdjU3.css`.
-- Did not modify product code.
+The repair closes every finding in review rounds 1–3. It adds a true `?demo=1` sample sandbox, stronger downloadable-file and privacy verification, claim coverage, real route/metadata/404 behavior, plain copy, build IDs, limits and how-it-works sections, recovery copy, and intentional mobile navigation. The product remains the original paper-collage/riso visual system.
 
-## Verification performed
+## Exact verification evidence
 
-- Fresh mobile (390 × 844) and desktop (1440 × 1000) production contexts for cold first read.
-- One-click demo entry, seed, reset, exit, request log, and local/session/cookie/IndexedDB/OPFS/Cache Storage inspection.
-- Every exact command in `.factory/claims.json` from clean clone `/tmp/calendar-handoff-review3.iBRDQn/repo`: all commands exited successfully.
-- `npm test`: 12 unit tests passed; 26 Playwright checks passed; 2 configured mobile export duplicates skipped.
-- Independent live PNG, PDF, and ICS downloads; all were valid, non-empty files.
-- Live route/title/metadata/404/deep-link/Back/Forward/focus checks and rendered-link crawl.
-- Live Axe checks at mobile and desktop for `/`, `/demo`, `/privacy`, `/terms`, and `/404.html`: no serious/critical violations.
-- `/opt/fleet/lib/verify-url.sh https://calendar-handoff-card.sociobot.in`: passed with no load errors.
+- Final clean clone: `/tmp/calendar-handoff-polish3-finalrelease.yld6Tm/repo` at `b7625108d3a02533edcd672a3f2458beaa4c9c0f`.
+- `npm ci`: passed (88 packages, 0 vulnerabilities).
+- Every one of the 15 exact commands from `.factory/claims.json` was run separately and passed in that clean clone: `demo-sample`, `no-account`, `local-processing`, `dst-conversion`, `text-export`, `ics-download`, `all-entered-details`, `image-download`, `pdf-download`, `private-output-options`, `ics-import`, `timezone-equivalents`, `offline-reload`, `cache-privacy`, and `scope-limits`.
+- Clean-clone `npm test`: passed — 13 Vitest tests and 34 Playwright desktop/mobile tests.
+- Clean-clone `npm run build`: passed; emits `dist/index.html`. Final sizes: JavaScript 52.65 kB (19.99 kB gzip), CSS 20.23 kB (5.32 kB gzip).
+- Mobile Lighthouse on the demo: performance 97, accessibility 100, LCP 2.4 s, CLS 0.028 (`.factory/evidence/polish-3-lighthouse-retry.json`).
+- Final production build check: custom domain serves build ID `b762510`, `index-CMfpb3Ya.js`, and `style-DkNtA8IA.css`.
+- `verify-url.sh` passed with no console errors, `lang=en`, one h1, main landmark, and no missing image alt text for `/`, `/?demo=1`, `/privacy`, and `/terms`. Evidence: `.factory/evidence/polish-3-final-{home,demo,privacy,terms}/verify.json`.
+- Production mobile demo check at 390 × 844: h1 is “Try a sample event card”; banner y=111; filled card y=425; card title y=504; the nav is an intentional grid. Screenshot: `.factory/evidence/polish-3-live-demo/cold-mobile-final.png`.
+- Production PNG/PDF actions generated valid files with PNG/PDF signatures: `.factory/evidence/polish-3-live-demo/live-card-final.png` and `.factory/evidence/polish-3-live-demo/live-card-final.pdf`.
+- Production Axe at 390px reported zero serious/critical issues for `/`, `/?demo=1`, `/privacy`, `/terms`, and `/404.html`.
+- Production route check: `/not-a-real-page` returns HTTP 404 with title “Page not found — Calendar Handoff Card” and h1 “Page not found.” Home → Privacy focuses the privacy h1; Back focuses the home h1.
 
-## Outstanding review result
+## Deployment
 
-The primary blockers are:
+Built with `npm run build`, then deployed `dist/` as production using the Azure Static Web Apps deployment credential retrieved for the authorized resource. The CLI reported: `Project deployed to https://icy-glacier-06f41f70f.7.azurestaticapps.net`.
 
-1. `/demo` leaves a phone visitor at the unchanged hero; the filled product and non-persistent demo banner are below the first viewport.
-2. The calendar-file test does not prove the visible “all entered details” claim.
-3. PNG/PDF tests assert filenames only, not valid event-card content.
-4. Private link/note/QR choices are not tested in downloaded PNG/PDF files.
-5. The earlier metaphor “The date and time will land here” remains.
+## Product records
 
-Additional unlisted claims, copy terminology, recovery messages, standard-skeleton omissions, and the missing footer build identifier are recorded with concrete fixes in `.factory/review-3.md`.
+- Cumulative finding map: `.factory/polish-3.md`
+- Claims registry: `.factory/claims.json`
+- Demo boundary: `.factory/demo.md`
+- Copy/terminology audit: `.factory/copy-audit.md`
 
-## Reproduce
+## Known gaps
 
-```sh
-npm ci
-npm test
-npm run build
-```
-
-Run each command in `.factory/claims.json` separately from a clean clone, then repeat the live first-screen demo check at 390 × 844. A future review may pass only after every finding in `.factory/review-3.md` is closed and verified on production.
+None.
