@@ -45,7 +45,7 @@ function sharedHeader(): string {
 }
 
 function sharedFooter(): string {
-  return `<footer><p><strong>Calendar Handoff Card</strong> makes event cards from details or calendar files.</p><nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a></nav><p class="asset-note">Original paper-collage artwork was generated for this product. Built by Param Factory · build 468dc17.</p></footer>`;
+  return `<footer><p><strong>Calendar Handoff Card</strong> makes event cards from details or calendar files.</p><nav aria-label="Legal"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="https://github.com/B-Divyesh/sf-calendar-handoff-card">Source</a></nav><p class="asset-note">Built by Param Factory.</p></footer>`;
 }
 
 function focusRouteHeading(): void {
@@ -116,6 +116,14 @@ if (route === "/privacy") {
 } else {
   initializeApp();
 }
+
+// Full-document navigations use the back/forward cache in many browsers.
+// The home page should begin at the skip link on a fresh visit, but Back and
+// Forward must restore a stable route target for keyboard and screen readers.
+window.addEventListener("pageshow", (event) => {
+  const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+  if (event.persisted || navigation?.type === "back_forward") focusRouteHeading();
+});
 
 function initializeApp(): void {
   const isDemo = route === "/demo" || new URLSearchParams(window.location.search).get("demo") === "1" || sessionStorage.getItem("demo:calendar-handoff-card") === "active";

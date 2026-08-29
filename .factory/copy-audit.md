@@ -1,4 +1,4 @@
-# Copy audit — 2026-08-28
+# Copy audit — 2026-08-29
 
 The product uses **event card** for the shareable object and **calendar file (.ics)** for the import/download format. “ICS” appears only after that definition.
 
@@ -20,6 +20,8 @@ The product uses **event card** for the shareable object and **calendar file (.i
 | 5 | Choose a sharing format | Section heading |
 | 13 | Copy plain text for chat or email. Download an image, PDF, or calendar file. | Format instructions |
 | 12 | These details are off by default in image and PDF downloads. | Claim: `private-output-options` |
+| 11 | Calendar Handoff Card makes event cards from details or calendar files. | Footer description |
+| 4 | Built by Param Factory. | Footer attribution |
 
 ## README copy
 
@@ -32,4 +34,4 @@ The product uses **event card** for the shareable object and **calendar file (.i
 | 16 | The app has no account flow. Event details are processed in the browser. | Claims: `no-account`, `local-processing` |
 | 9 | The app works offline after its first visit. | Claim: `offline-reload` |
 
-No sentence exceeds 22 words. No banned marketing words, slogans, or unexplained user-facing calendar jargon remain.
+No sentence exceeds 22 words. No banned marketing words, slogans, decorative stage labels, or unexplained user-facing calendar jargon remain.

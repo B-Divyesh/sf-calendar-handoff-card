@@ -24,6 +24,12 @@
   box-sizing: border-box;
 }
 
+/* The demo banner is present in the static shell so /demo can hydrate it,
+   but it must never appear until demo mode explicitly enables it. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   background: var(--paper);

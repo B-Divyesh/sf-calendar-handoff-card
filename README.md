@@ -32,7 +32,7 @@ Build the static deploy output with:
 npm run build
 ```
 
-The deploy artifact is `dist/`, with `dist/index.html` at its root. Azure Static Web Apps uses `staticwebapp.config.json` for fallback, headers, caches, and the designed 404 response.
+The deploy artifact is `dist/`, with `dist/index.html` at its root. The build emits static documents for known routes and Azure Static Web Apps serves the designed 404 response for unknown paths.
 
 ## Test
 

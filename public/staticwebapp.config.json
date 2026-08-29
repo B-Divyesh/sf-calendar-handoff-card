@@ -1,8 +1,4 @@
 {
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/assets/*", "/404.html", "/sitemap.xml", "/robots.txt", "/*.{css,js,json,txt,webp,jpg,png,svg,ico}"]
-  },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",

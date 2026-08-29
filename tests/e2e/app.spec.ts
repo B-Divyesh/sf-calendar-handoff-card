@@ -155,14 +155,35 @@ test("@claim:offline-reload reloads the filled sample after first visit", async 
 test("routes set titles, focus the new heading, and expose a useful 404", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle("Calendar Handoff Card — create an event card");
+  await expect(page.getByLabel("Demo mode")).toBeHidden();
+  expect(await page.evaluate(() => sessionStorage.getItem("demo:calendar-handoff-card"))).toBeNull();
   await page.getByRole("link", { name: "Privacy" }).first().click();
   await expect(page).toHaveTitle("Privacy — Calendar Handoff Card");
   await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
-  await page.goto("/terms");
-  await expect(page).toHaveTitle("Terms — Calendar Handoff Card");
-  await page.goto("/404.html");
+  await page.goBack();
+  await expect(page).toHaveTitle("Calendar Handoff Card — create an event card");
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  await page.goForward();
+  await expect(page).toHaveTitle("Privacy — Calendar Handoff Card");
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  await page.goto("/demo");
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  await page.goBack();
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  const errors: string[] = [];
+  page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+  const direct404 = await page.goto("/404.html");
+  expect(direct404?.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Try the sample event" })).toHaveAttribute("href", "/demo");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://calendar-handoff-card.sociobot.in/404.html");
+  const notFoundAxe = await new AxeBuilder({ page: page as never }).analyze();
+  expect(notFoundAxe.violations.filter((violation) => ["serious", "critical"].includes(violation.impact || ""))).toEqual([]);
+  expect(errors).toEqual([]);
+  const missing = await page.goto("/not-a-real-page");
+  expect(missing?.status()).toBe(404);
+  await expect(page).toHaveTitle("Page not found — Calendar Handoff Card");
+  await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
 });
 
 test("metadata, accessibility, keyboard order, and mobile layout work", async ({ page, isMobile }) => {
