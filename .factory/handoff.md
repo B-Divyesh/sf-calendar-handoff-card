@@ -5,7 +5,7 @@
 Repaired every finding in [review-1.md](review-1.md) and [review-2.md](review-2.md). The product remains a Vite + TypeScript static site with its paper-collage visual identity.
 
 - Commit `be8dc9b47319b9ae7f7e5117fe0b78d5e0231408` removes the false home demo banner, emits real static documents for `/demo`, `/privacy`, and `/terms`, restores Back/Forward heading focus, supplies an HTTP 404 path, completes the 404 shell/metadata, removes stale footer/build copy, and removes decorative labels.
-- Commit `4d8ec5379f5274bfbb0efbc14d43eb9d63a2f2d0` corrects the direct-404 red label to accessible contrast after the new 404 Axe check caught it.
+- Commit `4d8ec53987fb059088539ddf6f844eb313c1286a` corrects the direct-404 red label to accessible contrast after the new 404 Axe check caught it.
 - `.factory/polish-2.md` maps F-1-1 through F-1-34 and F-2-1 through F-2-6 to changes and evidence.
 
 ## Verification
