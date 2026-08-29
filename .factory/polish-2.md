@@ -52,3 +52,7 @@ This repair starts from review commit `45feb415f02fe7cf65a577be09095ff89bf96953`
 - `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173 .factory/evidence/polish-2-local` — passed with no console errors, one h1, language, main landmark, and image-alt checks.
 - `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/404.html .factory/evidence/polish-2-404` — passed under the deployment CSP with no console errors.
 - Playwright Axe checks at desktop/mobile cover home and direct 404; no serious or critical violations.
+
+## Live URL check
+
+At `2026-08-29T00:43Z`, `https://calendar-handoff-card.sociobot.in/not-a-real-page` still returned the pre-repair artifact (HTTP 200, home title, old `01 / Source` label). The completed code is pushed to `main`; the Azure target/deployment-token mapping is absent from the work order and the attempted Static Web Apps CLI deployment stalled. The exact deployment blocker and required post-deploy cold checks are recorded in `.factory/handoff.md`.
